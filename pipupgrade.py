@@ -50,10 +50,11 @@ class Check(object):
         self._fail_report(failed_packages)
 
     def _fail_report(self, pkgs):
-        print 20*'-'
-        print 'Failed to upgrade these packages:'
-        for package in pkgs:
-            print package.project_name
+        if pkgs:
+            print 20*'-'
+            print 'Failed to upgrade these packages:'
+            for package in pkgs:
+                print package.project_name
 
 
 if __name__ == '__main__':
