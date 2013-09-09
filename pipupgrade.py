@@ -31,24 +31,29 @@ def install(old, new):
 class Check(object):
     _pypi = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
 
-    def __call__(self, method=inform):
-         for dist in pip.get_installed_distributions():
-            available = self._pypi.package_releases(dist.project_name)
-            if not available:
-                # Try to capitalize pkg name
-                available = self._pypi.package_releases(dist.project_name.capitalize())
+    def __init__(self, skiplist):
+        self.skiplist = skiplist
 
+    def __call__(self, method=inform):
+        for dist in pip.get_installed_distributions():
+            if dist.project_name not in self.skiplist:
+                available = self._pypi.package_releases(dist.project_name)
+                if not available:
+                    available = self._pypi.package_releases(dist.project_name.capitalize())
             method(dist, available)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Upgrade or check for new versions of installed packages on pypi.")
     parser.add_argument('--install', action="store_true", help="Install upgradable packages")
+    parser.add_argument('--skip', nargs='*', help="Skip these packages")
 
     args = parser.parse_args()
 
-    c = Check()
-    if args.install:
-        c(install)
-    else:
-        c()
-
+    c = Check(set(args.skip))
+    try:
+        if args.install:
+            c(install)
+        else:
+            c()
+    except KeyboardInterrupt:
+        exit("\nAction aborted by user")
