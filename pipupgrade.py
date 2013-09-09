@@ -2,7 +2,7 @@
 
 import xmlrpclib
 import pip
-from subprocess import call
+from subprocess import check_call, CalledProcessError
 import argparse
 
 
@@ -26,7 +26,7 @@ def inform(old, new):
 def install(old, new):
     doinstall = inform(old, new)
     if doinstall:
-        call('pip install --upgrade {}'.format(old.project_name), shell=True)
+        check_call('pip install --upgrade {}'.format(old.project_name), shell=True)
 
 class Check(object):
     _pypi = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
@@ -35,12 +35,26 @@ class Check(object):
         self.skiplist = set(skiplist)
 
     def __call__(self, method=inform):
+        failed_packages = []
         for dist in pip.get_installed_distributions():
             if dist.project_name not in self.skiplist:
                 available = self._pypi.package_releases(dist.project_name)
                 if not available:
                     available = self._pypi.package_releases(dist.project_name.capitalize())
-                method(dist, available)
+                try:
+                    method(dist, available)
+                except CalledProcessError:
+                    print '\nFAILED UPGRADE {}'.format(dist.project_name)
+                    failed_packages.append(dist)
+
+        self._fail_report(failed_packages)
+
+    def _fail_report(self, pkgs):
+        print 20*'-'
+        print 'Failed to upgrade these packages:'
+        for package in pkgs:
+            print package.project_name
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Upgrade or check for new versions of installed packages on pypi.",
