@@ -40,10 +40,11 @@ class Check(object):
                 available = self._pypi.package_releases(dist.project_name)
                 if not available:
                     available = self._pypi.package_releases(dist.project_name.capitalize())
-            method(dist, available)
+                method(dist, available)
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Upgrade or check for new versions of installed packages on pypi.")
+    parser = argparse.ArgumentParser(description="Upgrade or check for new versions of installed packages on pypi.",
+                                     fromfile_prefix_chars='@')
     parser.add_argument('--install', action="store_true", help="Install upgradable packages")
     parser.add_argument('--skip', default=[], nargs='*', help="Skip these packages")
 
