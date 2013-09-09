@@ -31,8 +31,8 @@ def install(old, new):
 class Check(object):
     _pypi = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
 
-    def __init__(self, skiplist):
-        self.skiplist = skiplist
+    def __init__(self, skiplist=[]):
+        self.skiplist = set(skiplist)
 
     def __call__(self, method=inform):
         for dist in pip.get_installed_distributions():
@@ -45,11 +45,11 @@ class Check(object):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Upgrade or check for new versions of installed packages on pypi.")
     parser.add_argument('--install', action="store_true", help="Install upgradable packages")
-    parser.add_argument('--skip', nargs='*', help="Skip these packages")
+    parser.add_argument('--skip', default=[], nargs='*', help="Skip these packages")
 
     args = parser.parse_args()
+    c = Check(args.skip)
 
-    c = Check(set(args.skip))
     try:
         if args.install:
             c(install)
