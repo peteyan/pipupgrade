@@ -14,3 +14,9 @@ optional arguments:
   --skip [SKIP [SKIP ...]]
                         Skip these packages
 ```
+
+You can pass a skip list as a file, where each package name is on a separate line by prefixing the file name with '@' symbol, for example:
+
+```
+python pipupgrade.py --skip @skip.txt
+```
