@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
 import xmlrpclib
 import pip
@@ -57,7 +57,7 @@ class Check(object):
                 print package.project_name
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(description="Upgrade or check for new versions of installed packages on pypi.",
                                      fromfile_prefix_chars='@')
     parser.add_argument('--install', action="store_true", help="Install upgradable packages")
@@ -73,3 +73,6 @@ if __name__ == '__main__':
             c()
     except KeyboardInterrupt:
         exit("\nAction aborted by user")
+
+if __name__ == '__main__':
+    main()
