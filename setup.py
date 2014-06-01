@@ -9,7 +9,7 @@ setup(name='pipupgrade',
       author_email='jzegan@gmail.com',
       #packages=find_packages(),
       install_requires=['pip'],
-      py_modules = ['scripts'],
+      py_modules = ['scripts.pipupgrade'],
       entry_points={
           'console_scripts': ['pipupgrade = scripts.pipupgrade:main']
           }
